@@ -1,39 +1,81 @@
 import axios from 'axios';
 
+// Base URL for your backend API
 // const myBaseUrl = 'http://localhost:8000/api';
-const myBaseUrl =  process.env.NEXT_PUBLIC_BASE_URL;
+const myBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 const api = axios.create({
   baseURL: myBaseUrl,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
+// --- 🔐 Security Layer for localStorage ---
+// Token getter that protects against SSR and XSS
+const getToken = () => {
+  try {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('access_token');
+    }
+    return null;
+  } catch (err) {
+    console.warn("Could not access localStorage:", err);
+    return null;
+  }
+};
+
+// Add Authorization header to every request if token exists
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token');
+  const token = getToken();
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`; // Django TokenAuthentication
+    config.headers.Authorization = `Bearer ${token}`; // For DRF TokenAuthentication
   }
   return config;
 });
 
-
+// --- 🔁 Auto-logout on expired or invalid token ---
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('access_token');
-      window.location.reload();
+      try {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('role');
+      } catch (e) {
+        console.warn("Failed to clear localStorage:", e);
+      }
+      // Optional: redirect user to login
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
 );
 
+// --- ⏳ Token Expiry Auto-Check (Optional) ---
+export const isTokenExpired = () => {
+  const token = getToken();
+  if (!token) return true;
+
+  try {
+    const [, payload] = token.split('.');
+    const decoded = JSON.parse(atob(payload));
+    return decoded.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+};
+
+// --- 📦 API Endpoints ---
 export const AuthAPI = {
   register: (formData) => api.post('/register/', formData),
   login: (credentials) => api.post('/login/', credentials),
 };
 
 export const PasscodeAPI = {
-  verify: (data) => api.post('/verify-passcode/', data), // ✅ for editors before login
+  verify: (data) => api.post('/verify-passcode/', data),
 };
 
 export const PublicationAPI = {
@@ -55,25 +97,18 @@ export const CategoryAPI = {
 };
 
 export const ViewsAPI = {
-  // 👍 Like publication
   like: (publicationId) =>
     api.patch(`/publications/${publicationId}/views/`, { action: 'like' }),
-     // Accepts optional query params (like ?page=1 or ?keywords=research)
-  list: (params = "") => api.get(`/publications/${params}`),
-
-  // 👎 Dislike publication
   dislike: (publicationId) =>
     api.patch(`/publications/${publicationId}/views/`, { action: 'dislike' }),
-
-  // (Optional) fetch user's view record for a publication
   detail: (publicationId) => api.get(`/publications/${publicationId}/views/me/`),
 };
 
 export const NotificationAPI = {
-    list: (params = "") => api.get(`/notifications/${params}`),
-    unread: () => api.get('/notifications/unread/'),
-    markRead: (id) => api.patch(`/notifications/${id}/read/`, { is_read: true }),
-    markAllRead: () => api.patch('/notifications/mark-all-read/'),
+  list: (params = "") => api.get(`/notifications/${params}`),
+  unread: () => api.get('/notifications/unread/'),
+  markRead: (id) => api.patch(`/notifications/${id}/read/`, { is_read: true }),
+  markAllRead: () => api.patch('/notifications/mark-all-read/'),
 };
 
 export default api;
