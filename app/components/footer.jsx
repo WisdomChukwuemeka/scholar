@@ -13,7 +13,7 @@ export const Footer = () => {
             </div>
             <p className="text-xs leading-relaxed">
               Breaking barriers in academic publishing. Journivo is dedicated to
-              making research accessible, transparent, and globally impactful.
+              making research accessible, afforadable, transparent, and globally impactful.
             </p>
           </div>
 
