@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     turbopack: {
-    root: '/' // relative path to your project root
+    root: process.cwd(), // relative path to your project root
   }
 };
 
