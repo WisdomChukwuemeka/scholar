@@ -12,6 +12,7 @@
     "@bprogress/next": "^3.2.12",
     "axios": "^1.12.2",
     "bootstrap-icons": "^1.13.1",
+    "crypto-js": "^4.2.0",
     "framer-motion": "^12.23.22",
     "js-cookie": "^3.0.5",
     "next": "^15.5.4",

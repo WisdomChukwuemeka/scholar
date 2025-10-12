@@ -1,5 +1,6 @@
 "use client";
 
+import { SecureStorage } from "@/utils/secureStorage";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,8 +24,8 @@ export const Header = () => {
     // Check authentication and role
     useEffect(() => {
         const checkAuthAndRole = () => {
-            const token = localStorage.getItem("access_token");
-            const storedRole = localStorage.getItem("role");
+            const token =  SecureStorage.get("access_token");
+            const storedRole =  SecureStorage.get("role");
             setIsLoggin(!!token);
             setRole(storedRole ? storedRole.trim().toLowerCase() : "");
         };
@@ -49,10 +50,10 @@ export const Header = () => {
                     setUnreadCount(response.data.results ? response.data.results.length : 0);
                 } catch (error) {
                     if (error.response?.status === 403 || error.response?.status === 401) {
-                        localStorage.removeItem("access_token");
-                        localStorage.removeItem("refresh_token");
-                        localStorage.removeItem("is_superuser");
-                        localStorage.removeItem("role");
+                         SecureStorage.remove("access_token");
+                        SecureStorage.remove("refresh_token");
+                        SecureStorage.remove("is_superuser");
+                        SecureStorage.remove("role");
                         setIsLoggin(false);
                         setRole("");
                         setNotifications([]);
@@ -83,10 +84,10 @@ export const Header = () => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        localStorage.removeItem("is_superuser");
-        localStorage.removeItem("role");
+        SecureStorage.remove("access_token");
+        SecureStorage.remove("refresh_token");
+        SecureStorage.remove("is_superuser");
+        SecureStorage.remove("role");
         setIsLoggin(false);
         setRole("");
         setNotifications([]);
@@ -229,7 +230,7 @@ export const Header = () => {
                         )}
 
                         {role === "editor" ? (
-                            <Link href="/dashboard"><button className="bg-blue-600 text-white btn hover:bg-blue-800 duration-500 px-4 py-2 rounded-md">Dashboard</button></Link>
+                            <Link href="/dashboard"><button className="hidden xl:flex bg-blue-600 text-white btn hover:bg-blue-800 duration-500 px-4 py-2 rounded-md">Dashboard</button></Link>
                         ) : (
                             <Link href="/publications/create"><button className="hidden xl:flex bg-orange-600 text-white btn hover:bg-orange-800 duration-500">Submit an Article</button></Link>
                         )}
@@ -432,7 +433,10 @@ export const Header = () => {
                                 </li>
                             </Link>
                             <li className="col-span-2 flex justify-center">
-                                <Link href="/publications/create">
+                                {role === "editor" ? (
+                                    <Link href="/dashboard"><button className=" xl:hidden bg-blue-600 text-white btn hover:bg-blue-800 duration-500 px-4 py-2 rounded-md">Dashboard</button></Link>
+                                ) : (
+                                    <Link href="/publications/create">
                                     <button
                                         className="bg-orange-600 text-white font-semibold px-6 py-2 rounded-full hover:bg-orange-700 hover:scale-105 transition duration-500 shadow-md"
                                         onClick={toggleMenu}
@@ -440,6 +444,8 @@ export const Header = () => {
                                         Submit an Article
                                     </button>
                                 </Link>
+                                )}
+                                
                             </li>
                         </ul>
                     </motion.div>

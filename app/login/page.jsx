@@ -1,5 +1,6 @@
 "use client";
 
+import { SecureStorage } from "@/utils/secureStorage";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -31,8 +32,10 @@ export default function Login () {
       if (!token || !role) {
         throw new Error("Invalid token or role in response");
       }
-      localStorage.setItem("access_token", token);
-      localStorage.setItem("role", role);
+      SecureStorage.set("access_token", token);
+      SecureStorage.set("role", role);
+      console.log("Stored token:", SecureStorage.get("access_token"));
+      console.log("Stored role:", SecureStorage.get("role"));
       window.dispatchEvent(new Event("authChange")); // Trigger auth change
       toast.success("Login successful!");
       router.push("/"); // Attempt client-side navigation
