@@ -230,9 +230,9 @@ export const Header = () => {
                         )}
 
                         {role === "editor" ? (
-                            <Link href="/dashboard"><button className="hidden xl:flex bg-blue-600 text-white btn hover:bg-blue-800 duration-500 px-4 py-2 rounded-md">Dashboard</button></Link>
+                            <Link href="/dashboard" className="hidden md:flex"><button className=" bg-blue-600 text-white btn hover:bg-blue-800 duration-500 px-4 py-2 rounded-md">Dashboard</button></Link>
                         ) : (
-                            <Link href="/publications/create"><button className="hidden xl:flex bg-orange-600 text-white btn hover:bg-orange-800 duration-500">Submit an Article</button></Link>
+                            <Link href="/publications/create"><button className="hidden md:flex bg-orange-600 text-white btn hover:bg-orange-800 duration-500">Submit an Article</button></Link>
                         )}
 
                         <div className="cursor-pointer text-black" onClick={toggleMenu}>
