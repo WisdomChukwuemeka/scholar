@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  //   turbopack: {
-  //   root: process.cwd(), // relative path to your project root
-  // }
+  outputFileTracingRoot: process.cwd(),
+  turbopack: {
+    root: process.cwd(),
+  },
 };
 
 export default nextConfig;
