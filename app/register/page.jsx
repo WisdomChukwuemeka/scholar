@@ -85,11 +85,11 @@ export default function Register ({onRegister}) {
             </div>
             <div>
             <label htmlFor="password" className="text block font-medium text-gray-700">Password</label>
-            <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="" required />
+            <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="***" required />
             </div>
             <div>
             <label htmlFor="confirm_password" className="text block font-medium text-gray-700">Confirm Password</label>
-            <input type="password" id="confirm_password" name="confirm_password" value={formData.confirm_password} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="" required />
+            <input type="password" id="confirm_password" name="confirm_password" value={formData.confirm_password} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="****" required />
             </div>
             <div>
             <label htmlFor="role" className="text block font-medium text-gray-700">Role</label>
