@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Jornivo",
+  title: "Journivo",
   description: "Publish your journal, article, books from the comfort of your home.",
   email: "wisdomchukwuemeka97@gmail.com",
   contact: "+234906907221"
