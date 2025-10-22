@@ -34,13 +34,12 @@ export default function Login () {
       }
       SecureStorage.set("access_token", token);
       SecureStorage.set("role", role);
-      console.log("Stored token:", SecureStorage.get("access_token"));
-      console.log("Stored role:", SecureStorage.get("role"));
-      window.dispatchEvent(new Event("authChange")); // Trigger auth change
       toast.success("Login successful!");
-      setTimeout(() => {
-        router.push("/");
-      }, 1500);
+      // Wait briefly to ensure SecureStorage is written
+    setTimeout(() => {
+      window.dispatchEvent(new Event("authChange")); // Notify any listeners
+      router.replace("/"); // ✅ Use replace to force redirect
+    }, 500);
 
       // Fallback if router fails
     } catch (error) {

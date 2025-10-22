@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { isTokenExpired } from "@/app/services/api";
 import { SecureStorage } from "@/utils/secureStorage";
-import Login from "../login/page";
 
 export default function ProtectedRoute({ children }) {
   const router = useRouter();
@@ -16,36 +15,40 @@ export default function ProtectedRoute({ children }) {
       try {
         const token = SecureStorage.get("access_token");
 
-        // 🔒 No token or expired token — show login immediately
+        // No token or expired token
         if (!token || isTokenExpired()) {
           SecureStorage.remove("access_token");
           SecureStorage.remove("role");
           setAuthorized(false);
+          router.replace("/login"); //  Navigate instead of rendering <Login />
         } else {
-          // ✅ Valid token found
           setAuthorized(true);
         }
       } catch (error) {
         console.error("ProtectedRoute error:", error);
         setAuthorized(false);
+        router.replace("/login");
       } finally {
         setCheckingAuth(false);
       }
     };
 
     checkAuth();
+
+    // Listen for auth changes (login/logout)
+    window.addEventListener("authChange", checkAuth);
+    return () => window.removeEventListener("authChange", checkAuth);
   }, [router]);
 
-  // 🧭 If still checking, show login by default (not null)
+  // Optional: show loading screen while checking
   if (checkingAuth) {
-    return <Login />;
+    return (
+      <div className="flex justify-center items-center h-screen text-gray-700">
+        <p>Checking authentication...</p>
+      </div>
+    );
   }
 
-  // 🚪 If not authorized, show login immediately
-  if (!authorized) {
-    return <Login />;
-  }
-
-  // ✅ Authorized — show protected page
-  return <>{children}</>;
+  // Show page only if authorized
+  return authorized ? <>{children}</> : null;
 }
