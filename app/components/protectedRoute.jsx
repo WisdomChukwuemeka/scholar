@@ -47,13 +47,6 @@ export default function ProtectedRoute({ children }) {
     return () => window.removeEventListener("authChange", checkAuth);
   }, [router, pathname]);
 
-  if (checkingAuth) {
-    return (
-      <div className="flex justify-center items-center h-screen text-gray-700">
-        <p>Checking authentication...</p>
-      </div>
-    );
-  }
 
   return authorized ? <>{children}</> : null;
 }
