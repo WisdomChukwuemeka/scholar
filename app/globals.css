@@ -1,9 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Rubik:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "bootstrap-icons/font/bootstrap-icons.css";
+
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+}
+
+html{
+  scroll-behavior: smooth;
 }
 
 @theme inline {
@@ -21,10 +27,25 @@
 }
 
 body {
+  font-family: "Merriweather", "Lora", "Playfair Display", "Cormorant Garamond",
+    "Libre Baskerville", "Roboto Slab", "EB Garamond", "Source Serif 4",
+    Georgia, "Times New Roman", serif;
   background: var(--foreground);
   color: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
+
+
+#__next {
+  height: 100%;
+}
+
+
 
 @layer utilities {
   .text{

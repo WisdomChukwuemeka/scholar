@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { NotificationAPI } from '../api';
-import NotificationItem from '../components/NotificationItem';
+import NotificationItem from '../components/NotificationList';
 
 // Component to display the user's notifications with real-time toast updates
 const Notifications = () => {

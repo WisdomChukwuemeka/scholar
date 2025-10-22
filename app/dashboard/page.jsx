@@ -1,3 +1,4 @@
+// app/dashboard/page.jsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,14 +13,11 @@ export default function EditorDashboard() {
   const [selectedPub, setSelectedPub] = useState(null);
   const [rejectionNote, setRejectionNote] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // ✅ Pagination states
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0);
-  const pageSize = 6; // number of items per page
+  const pageSize = 6;
   const totalPages = Math.ceil(count / pageSize);
 
-  // ✅ Fetch all publications for the editor with pagination
   useEffect(() => {
     const fetchPublications = async () => {
       setLoading(true);
@@ -27,7 +25,7 @@ export default function EditorDashboard() {
         const response = await PublicationAPI.list(`?page=${page}`);
         setPublications(response.data.results || []);
         setCount(response.data.count || 0);
-        console.log(response.data.results)
+        console.log("Publications:", response.data.results);
       } catch (error) {
         console.error("Error fetching publications:", error);
         toast.error("Failed to load publications");
@@ -38,10 +36,9 @@ export default function EditorDashboard() {
     fetchPublications();
   }, [page]);
 
-  // ✅ Mark as Under Review
   const handleUnderReview = async (id) => {
     try {
-      await PublicationAPI.patch(id, { status: "under_review" });
+      await PublicationAPI.update(id, { status: "under_review" });
       setPublications((prev) =>
         prev.map((pub) =>
           pub.id === id
@@ -52,14 +49,13 @@ export default function EditorDashboard() {
       toast.info("Publication marked as under review.");
     } catch (error) {
       console.error("Error marking as under review:", error);
-      toast.error("Failed to update publication status.");
+      toast.error(error.response?.data?.status || "Failed to update publication status.");
     }
   };
 
-  // ✅ Approve publication
   const handleApprove = async (id) => {
     try {
-      await PublicationAPI.patch(id, { status: "approved" });
+      await PublicationAPI.update(id, { status: "approved" });
       setPublications((prev) =>
         prev.map((pub) =>
           pub.id === id
@@ -70,26 +66,26 @@ export default function EditorDashboard() {
       toast.success("Publication approved successfully!");
     } catch (error) {
       console.error("Error approving publication:", error);
-      toast.error("Failed to approve publication.");
+      toast.error(error.response?.data?.status || "Failed to approve publication.");
     }
   };
 
-  // ✅ Open rejection modal
   const openRejectModal = (pub) => {
     setSelectedPub(pub);
     setRejectionNote("");
     setIsModalOpen(true);
   };
 
-  // ✅ Reject publication with note
   const handleReject = async () => {
-    if (!selectedPub) return;
+    if (!selectedPub || !rejectionNote.trim()) {
+      toast.error("Rejection note is required.");
+      return;
+    }
     try {
-      await PublicationAPI.patch(selectedPub.id, {
+      await PublicationAPI.update(selectedPub.id, {
         status: "rejected",
         rejection_note: rejectionNote,
       });
-
       setPublications((prev) =>
         prev.map((pub) =>
           pub.id === selectedPub.id
@@ -97,16 +93,14 @@ export default function EditorDashboard() {
             : pub
         )
       );
-
       setIsModalOpen(false);
       toast.success("Publication rejected with note sent.");
     } catch (error) {
       console.error("Error rejecting publication:", error);
-      toast.error("Failed to reject publication.");
+      toast.error(error.response?.data?.rejection_note || "Failed to reject publication.");
     }
   };
 
-  // ✅ Open document in new tab
   const handleViewDocument = (pub) => {
     if (pub.file) {
       window.open(pub.file, "_blank");
@@ -148,11 +142,9 @@ export default function EditorDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <ToastContainer />
-
       <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
         Editor Dashboard — Manage Publications
       </h1>
-
       {publications.length === 0 ? (
         <p className="text-center text-gray-500">No publications available.</p>
       ) : (
@@ -168,8 +160,6 @@ export default function EditorDashboard() {
                 className="bg-white rounded-2xl shadow-md p-5 flex flex-col justify-between"
               >
                 <div>
-                  
-                  {/* Display video if available */}
                   {pub.video_file ? (
                     <div className="mb-4">
                       <video
@@ -183,7 +173,6 @@ export default function EditorDashboard() {
                   ) : (
                     <p className="text-gray-500 text-sm mb-4">No video available</p>
                   )}
-
                   <h2 className="text-xl font-semibold text-gray-800 mb-2">
                     {pub.title}
                   </h2>
@@ -193,8 +182,6 @@ export default function EditorDashboard() {
                   <p className="text-sm text-gray-400 mb-2">
                     Author: {pub.author || "Unknown"}
                   </p>
-
-                  {/* ✅ Status Indicator */}
                   <p
                     className={`text-sm font-medium ${
                       pub.status === "approved"
@@ -208,8 +195,6 @@ export default function EditorDashboard() {
                   >
                     Status: {pub.status.replace("_", " ")}
                   </p>
-
-                  {/* ✅ Rejection Note */}
                   {pub.status === "rejected" && pub.rejection_note && (
                     <div className="bg-red-50 border border-red-200 rounded-lg mt-3 p-3">
                       <p className="text-red-700 text-sm font-medium">
@@ -221,38 +206,31 @@ export default function EditorDashboard() {
                     </div>
                   )}
                 </div>
-
                 <button
                   onClick={() => handleViewDocument(pub)}
                   className="bg-indigo-600 text-white px-3 py-2 rounded-lg hover:bg-indigo-700 transition mt-4"
                 >
                   View PDF
                 </button>
-
-                {/* ✅ Action Buttons */}
                 <div className="flex flex-wrap justify-between items-center mt-4 gap-2">
                   <button
                     onClick={() => handleUnderReview(pub.id)}
                     className={`bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition ${
-                      pub.status === "under_review" &&
-                      "opacity-50 cursor-not-allowed"
+                      pub.status === "under_review" && "opacity-50 cursor-not-allowed"
                     }`}
                     disabled={pub.status === "under_review"}
                   >
                     Under Review
                   </button>
-
                   <button
                     onClick={() => handleApprove(pub.id)}
                     className={`bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition ${
-                      pub.status === "approved" &&
-                      "opacity-50 cursor-not-allowed"
+                      pub.status === "approved" && "opacity-50 cursor-not-allowed"
                     }`}
                     disabled={pub.status === "approved"}
                   >
                     Approve
                   </button>
-
                   <button
                     onClick={() => openRejectModal(pub)}
                     className={`bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition ${
@@ -266,11 +244,8 @@ export default function EditorDashboard() {
               </motion.div>
             ))}
           </div>
-
-          {/* ✅ Pagination Controls */}
           {totalPages > 1 && (
             <div className="flex justify-center items-center mt-8 space-x-2">
-              {/* Prev Button */}
               <button
                 className={`px-4 py-2 rounded-md border ${
                   page === 1
@@ -282,8 +257,6 @@ export default function EditorDashboard() {
               >
                 Prev
               </button>
-
-              {/* Page Numbers */}
               {[...Array(totalPages)].map((_, i) => (
                 <motion.button
                   key={i}
@@ -298,8 +271,6 @@ export default function EditorDashboard() {
                   {i + 1}
                 </motion.button>
               ))}
-
-              {/* Next Button */}
               <button
                 className={`px-4 py-2 rounded-md border ${
                   page === totalPages
@@ -315,8 +286,6 @@ export default function EditorDashboard() {
           )}
         </>
       )}
-
-      {/* ✅ Rejection Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div
@@ -344,7 +313,6 @@ export default function EditorDashboard() {
                 onChange={(e) => setRejectionNote(e.target.value)}
                 placeholder="Enter rejection reason..."
               />
-
               <div className="flex justify-end mt-4 space-x-3">
                 <button
                   onClick={() => setIsModalOpen(false)}

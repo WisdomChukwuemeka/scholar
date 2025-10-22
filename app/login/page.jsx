@@ -38,7 +38,10 @@ export default function Login () {
       console.log("Stored role:", SecureStorage.get("role"));
       window.dispatchEvent(new Event("authChange")); // Trigger auth change
       toast.success("Login successful!");
-      router.push("/"); // Attempt client-side navigation
+      setTimeout(() => {
+        router.push("/");
+      }, 1500);
+
       // Fallback if router fails
     } catch (error) {
       console.error("Login error:", error); // Debug error
@@ -66,7 +69,7 @@ export default function Login () {
 
   return (
     <>
-      <div className="max-w-2xl mx-auto mt-20 p-6 bg-white text-black rounded-lg shadow-md">
+      <div className="mb-50 max-w-2xl mx-auto mt-20 p-6 bg-white text-black rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Login to Your Account</h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>

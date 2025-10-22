@@ -5,8 +5,8 @@ const SECRET_KEY = process.env.NEXT_PUBLIC_STORAGE_KEY || "mySecretKey@123";
 export const SecureStorage = {
   set(key, value) {
     try {
-      console.log(`Setting ${key} with value:`, value);
-      const encrypted = CryptoJS.AES.encrypt(value, SECRET_KEY).toString();
+      const stringValue = typeof value === "string" ? value : JSON.stringify(value);
+      const encrypted = CryptoJS.AES.encrypt(stringValue, SECRET_KEY).toString();
       localStorage.setItem(key, encrypted);
     } catch (err) {
       console.error("Storage set error:", err);
@@ -16,14 +16,17 @@ export const SecureStorage = {
   get(key) {
     try {
       const encrypted = localStorage.getItem(key);
-      if (!encrypted) {
-        console.log(`No data found for ${key}`);
-        return null;
-      }
+      if (!encrypted) return null;
+
       const bytes = CryptoJS.AES.decrypt(encrypted, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-      console.log(`Decrypted ${key}:`, decrypted);
-      return decrypted ? decrypted : null;
+
+      // Try to parse back to object
+      try {
+        return JSON.parse(decrypted);
+      } catch {
+        return decrypted;
+      }
     } catch (err) {
       console.error("Storage get error:", err);
       return null;

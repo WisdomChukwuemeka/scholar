@@ -2,14 +2,11 @@ import axios from 'axios';
 import { SecureStorage } from '@/utils/secureStorage';
 
 // Base URL for your backend API
-// const myBaseUrl = 'http://localhost:8000/api';
-const myBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+const myBaseUrl = 'http://localhost:8000/api';
+// const myBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 const api = axios.create({
   baseURL: myBaseUrl,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 // --- 🔐 Security Layer for localStorage ---
@@ -81,12 +78,26 @@ export const PasscodeAPI = {
 
 export const PublicationAPI = {
   list: (params = "") => api.get(`/publications/${params}`),
+  listitem: (options = {}) => api.get("/publications/", options),
   create: (data) => api.post('/publications/', data),
   detail: (id) => api.get(`/publications/${id}/`),
-  update: (id, data) => api.put(`/publications/${id}/`, data),
-  patch: (id, data) => api.patch(`/publications/${id}/`, data),
-  delete: (id) => api.delete(`/publications/${id}/`),
-  userPublications: (userId) => api.get(`/users/${userId}/publications/`),
+  patch: (id, data) => api.patch(`/publications/${id}/update/`, data), // Fixed to use /update/
+  update: async (publicationId, data) => { return await api.patch(`/publications/${publicationId}/update/`, data); }, // Changed to PATCH
+  getPublication: (publicationId) => api.get(`/publications/${publicationId}/`),
+  get: (id) => api.get(`/publications/${id}/`),
+  // ✅ Pagination-safe custom fetch
+  customGet: async (url) => {
+    const token = getToken();
+    try {
+      const response = await axios.get(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      return response;
+    } catch (error) {
+      console.error("Pagination fetch error:", error);
+      throw error;
+    }
+  },
 };
 
 export const CategoryAPI = {
@@ -110,6 +121,64 @@ export const NotificationAPI = {
   unread: () => api.get('/notifications/unread/'),
   markRead: (id) => api.patch(`/notifications/${id}/read/`, { is_read: true }),
   markAllRead: () => api.patch('/notifications/mark-all-read/'),
+};
+
+// --- 💸 Payment Endpoints ---
+export const PaymentAPI = {
+  initializePayment: async ({ publication_id, payment_type }) => {
+    const payload = {
+      publication_id,
+      payment_type,
+    };
+    console.log("Initializing payment payload:", payload);
+    try {
+      const response = await api.post('/payments/initialize/', payload);
+      console.log("Payment initialization response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Payment initialization error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+  initializePaymentWithOverride: async ({ publication_id, payment_type, amount }) => {
+    const convertedAmount = amount / 100; // Convert kobo to NGN
+    const payload = {
+      publication_id,
+      payment_type,
+      amount: convertedAmount,
+    };
+    console.log("Initializing payment with override payload:", payload);
+    try {
+      const response = await api.post('/payments/initialize-override/', payload);
+      console.log("Payment initialization response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Payment initialization error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+  verifyPayment: async (reference) => {
+    return await api.post('/payments/verify/', { reference });
+  },
+  getSubscriptionDetails: async () => {
+    return await api.get('/subscriptions/'); // Added to match SubscriptionView
+  },
+  getSubscription: async () => {
+    return await api.get('/free-review-status/'); // Matches FreeReviewStatusView
+  },
+  getPaymentHistory: async () => {
+    return await api.get('/payments/history/'); // Added to match PaymentHistoryView
+  },
+  getPaymentDetails: async (reference) => {
+    return await api.get(`/payments/details/${reference}/`); // Added to match PaymentDetailsView
+  },
+  requestRefund: async (data) => {
+    return await api.post('/payments/refund/', data); // Added to match RequestRefundView
+  },
+  getFreeReviewStatus: async () => {
+  return await api.get('/free-review-status/');
+},
+
 };
 
 export default api;

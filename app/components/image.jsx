@@ -81,24 +81,25 @@ export const sections = [
 ];
 
 export const articles = [
-    {
-      id: 1,
-      title:
-        "Factors affecting implementation of small-scale irrigation projects: the case of Ada'a district irrigation construction and scheme administration, East Showa, Oromia, Ethiopia",
-      author: "Megersa Tolera",
-      image: "/education/greenone.png", // replace with real image path
-    },
-    {
-      id: 2,
-      title:
-        "Enhancing Environmental Education through Game-Based Learning: A Literature Review and Experimental Study",
-      author: "Nissaf Sleimi, Ines Sahtout Gaha",
-      image: "/education/green.png", // replace with real image path
-    },
+  {
+  id: 1,
+  title:
+    "Factors Influencing Implementation of Small-Scale Irrigation Projects in Ada’a District, Oromia, Ethiopia",
+  author: "Megersa Tolera",
+  image: "/education/greenone.png",
+},
+{
+  id: 2,
+  title:
+    "Enhancing Environmental Education through Interactive Game-Based Learning Approaches: A Comparative Study",
+  author: "Nissaf Sleimi, Ines Sahtout Gaha",
+  image: "/education/green.png",
+},
+
      {
     id: 3,
     title:
-      "The Role of Guidance and Counselling in Enhancing Students’ Self-Esteem: A Case Study of Obio-Akpor Local Government Area",
+      "The Role of Guidance and Counselling in Enhancing Students’ Self-Esteem: A Case Study of Obio-Akpor",
     author: "Wisdom Chukwuemeka",
     image: "/education/greenthree.png", // replace with real image path
   },
