@@ -17,30 +17,30 @@ export const SecureStorage = {
   },
 
   get(key) {
-    if (typeof window === "undefined") return null; // ✅ Prevent SSR mismatch
+  if (typeof window === "undefined") return null; // ✅ Prevent SSR mismatch
 
-    try {
-      const encrypted = localStorage.getItem(key);
-      if (!encrypted) return null;
+  try {
+    const encrypted = localStorage.getItem(key);
+    if (!encrypted) return null;
 
-      const bytes = CryptoJS.AES.decrypt(encrypted, SECRET_KEY);
-      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+    const bytes = CryptoJS.AES.decrypt(encrypted, SECRET_KEY);
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
 
-      if (!decrypted) {
-        console.warn(`Decryption failed for key: ${key}`);
-        return null;
-      }
-
-      try {
-        return JSON.parse(decrypted);
-      } catch {
-        return decrypted;
-      }
-    } catch (err) {
-      console.error("Storage get error:", err);
+    if (!decrypted) {
+      console.warn(`Decryption failed for key: ${key}`); // Add log for debugging
       return null;
     }
-  },
+
+    try {
+      return JSON.parse(decrypted);
+    } catch {
+      return decrypted;
+    }
+  } catch (err) {
+    console.error("Storage get error:", err); // Ensure logs in production
+    return null;
+  }
+},
 
   remove(key) {
     if (typeof window === "undefined") return; // ✅ Prevent SSR crash
