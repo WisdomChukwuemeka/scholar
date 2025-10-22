@@ -22,7 +22,7 @@ export default function NotificationList() {
         setUnreadCount(unreadResponse.data.unread_count || 0);
       } catch (err) {
         setError('Failed to load notifications.');
-        console.error('Error fetching notifications:', err);
+        // console.error('Error fetching notifications:', err);
       } finally {
         setLoading(false);
       }
@@ -38,7 +38,7 @@ export default function NotificationList() {
       toast.success('Notification marked as read.');
     } catch (err) {
       setError('Failed to mark notification as read.');
-      console.error('Error marking notification:', err);
+      // console.error('Error marking notification:', err);
     }
   };
 
@@ -50,7 +50,7 @@ export default function NotificationList() {
       toast.success('All notifications marked as read.');
     } catch (err) {
       setError('Failed to mark all notifications as read.');
-      console.error('Error marking all notifications:', err);
+      // console.error('Error marking all notifications:', err);
     }
   };
 

@@ -34,8 +34,8 @@ export default function PublicationListPage() {
       setTotalPages(Math.ceil(data.count / pageSize));
       setCurrentPage(page);
     } catch (err) {
-      console.error(err);
-      setError("Failed to load publications.");
+      // console.error(err);
+      // setError("Failed to load publications.");
     }
   };
 
@@ -46,7 +46,7 @@ export default function PublicationListPage() {
         const res = await PublicationAPI.getCurrentUser();
         setCurrentUser(res.data);
       } catch {
-        console.warn("Could not fetch current user.");
+        // console.warn("Could not fetch current user.");
       } finally {
         await fetchPublications(null, 1, "");
       }

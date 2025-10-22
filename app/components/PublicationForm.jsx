@@ -142,7 +142,7 @@ export default function PublicationForm() {
         router.push(`/publications/${publication.id}`);
       }
     } catch (err) {
-      console.error("Submit error:", err.response?.data || err.message);
+      // console.error("Submit error:", err.response?.data || err.message);
       toast.error(
         err.response?.data?.detail || "Failed to create publication.",
         { toastId: "submission-error" }

@@ -17,7 +17,7 @@ export default function PaymentModal({ publicationId, paymentType, onSuccess, on
           publication_id: publicationId || null, // Explicitly send null if undefined
           payment_type: paymentType,
         };
-        console.log('Sending payment initialization payload:', payload);
+        // console.log('Sending payment initialization payload:', payload);
         const response = await PaymentAPI.initializePayment(payload);
         setAuthorizationUrl(response.data.authorization_url);
         setReference(response.data.reference);
@@ -26,7 +26,7 @@ export default function PaymentModal({ publicationId, paymentType, onSuccess, on
                             err.response?.data?.publication_id?.[0] ||
                             'Failed to initialize payment.';
         setError(errorMessage);
-        console.error('Payment initialization error:', err.response?.data || err.message);
+        // console.error('Payment initialization error:', err.response?.data || err.message);
       } finally {
         setLoading(false);
       }

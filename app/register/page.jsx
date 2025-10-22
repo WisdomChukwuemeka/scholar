@@ -43,7 +43,7 @@ export default function Register ({onRegister}) {
         }
       }, 1500);
 
-    console.log("Registration response:", response);
+    // console.log("Registration response:", response);
     onRegister?.(response.data); // Notify parent component
   } catch (error) {
     if (error.response) {

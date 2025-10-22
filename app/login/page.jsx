@@ -26,7 +26,7 @@ export default function Login () {
     e.preventDefault();
     try {
       const response = await AuthAPI.login(credentials);
-      console.log("Login response:", response.data); // Debug response
+      // console.log("Login response:", response.data); // Debug response
       const token = response.data.access;
       const role = response.data.user.role;
       if (!token || !role) {
@@ -43,7 +43,7 @@ export default function Login () {
 
       // Fallback if router fails
     } catch (error) {
-      console.error("Login error:", error); // Debug error
+      // console.error("Login error:", error); // Debug error
       if (error.response) {
         const errors = error.response.data;
         let delay = 0;

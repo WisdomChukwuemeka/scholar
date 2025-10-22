@@ -151,7 +151,7 @@ export default function PublicationResubmitForm({ publicationId: propPublication
       setPendingFormData(data);
       setShowPaymentModal(true);
     } catch (err) {
-      console.error("Resubmission error:", err.response?.data || err.message);
+    //   console.error("Resubmission error:", err.response?.data || err.message);
       toast.error("Failed to resubmit publication.");
       setIsSubmitting(false);
     }
