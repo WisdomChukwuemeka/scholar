@@ -34,7 +34,7 @@ export default function RootLayout({ children }) {
 
           {/* Main fills space between header and footer */}
           <ProtectedRoute>
-            <main className="flex-grow container mx-auto px-4 py-8 flex justify-center items-center">
+            <main className="flex-grow container mx-auto px-4 py-8">
               {children}
             </main>
           </ProtectedRoute>
