@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { AuthAPI } from "../services/api";
 import { toast, ToastContainer } from "react-toastify";
 
-export default function Login() {
+export default function Login () {
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
@@ -25,9 +25,8 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("Login attempt with credentials:", credentials); // Debug
       const response = await AuthAPI.login(credentials);
-      console.log("Login response:", response.data); // Debug
+      // console.log("Login response:", response.data); // Debug response
       const token = response.data.access;
       const role = response.data.user.role;
       if (!token || !role) {
@@ -35,15 +34,16 @@ export default function Login() {
       }
       SecureStorage.set("access_token", token);
       SecureStorage.set("role", role);
-      console.log("Stored token:", SecureStorage.get("access_token")); // Debug: Verify storage
       toast.success("Login successful!");
-      // Wait for storage to complete
-      setTimeout(() => {
-        window.dispatchEvent(new Event("authChange"));
-        router.replace("/"); // Use replace to avoid back-button issues
-      }, 1000); // Increased delay for reliability
+      // Wait briefly to ensure SecureStorage is written
+    setTimeout(() => {
+      window.dispatchEvent(new Event("authChange")); // Notify any listeners
+      router.push("/"); // Use replace to force redirect
+    }, 500);
+
+      // Fallback if router fails
     } catch (error) {
-      console.error("Login error:", error.response?.data || error); // Enhanced log
+      // console.error("Login error:", error); // Debug error
       if (error.response) {
         const errors = error.response.data;
         let delay = 0;
@@ -51,7 +51,7 @@ export default function Login() {
           if (Array.isArray(errors[key])) {
             errors[key].forEach((msg) => {
               setTimeout(() => {
-                toast.error(`${msg}`);
+                toast.error(` ${msg}`);
               }, delay);
               delay += 1000;
             });
@@ -62,8 +62,6 @@ export default function Login() {
             delay += 1000;
           }
         }
-      } else {
-        toast.error("Login failed. Please try again.");
       }
     }
   };
