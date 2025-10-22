@@ -53,18 +53,24 @@ api.interceptors.response.use(
 );
 
 // --- ⏳ Token Expiry Auto-Check (Optional) ---
-export const isTokenExpired = () => {
-  const token = getToken();
-  if (!token) return true;
+export const isTokenExpired = (token) => {
+  if (!token || typeof token !== "string") return true;
 
   try {
-    const [, payload] = token.split('.');
+    const [, payload] = token.split(".");
+    if (!payload) return true;
+
     const decoded = JSON.parse(atob(payload));
-    return decoded.exp * 1000 < Date.now();
-  } catch {
+    if (!decoded.exp) return true;
+
+    const expired = decoded.exp * 1000 < Date.now();
+    return expired;
+  } catch (error) {
+    // console.warn("Invalid token format in isTokenExpired:", error);
     return true;
   }
 };
+
 
 // --- 📦 API Endpoints ---
 export const AuthAPI = {
