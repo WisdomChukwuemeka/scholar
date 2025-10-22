@@ -39,10 +39,10 @@ export default function RootLayout({ children }) {
             </main>
           {/* </ProtectedRoute> */}
 
-          {/* Footer stays at bottom */}
+          {/* Footeyr stays at bottom */}
           <Footer />
         </Providers>
       </body>
     </html>
-  );
+  );y
 }

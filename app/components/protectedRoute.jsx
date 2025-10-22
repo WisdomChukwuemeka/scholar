@@ -2,46 +2,50 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { SecureStorage } from "@/utils/secureStorage";
 import { isTokenExpired } from "@/app/services/api";
-import Login from "../login/page";
+import { SecureStorage } from "@/utils/secureStorage";
+import { Yantramanav } from "next/font/google";
 
 export default function ProtectedRoute({ children }) {
   const router = useRouter();
-  const pathname = usePathname();
-  const [authorized, setAuthorized] = useState(false);
+  const pathname = usePathname(); // ✅ get current route
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
 
-  const checkAuth = () => {
-    try {
-      const token = SecureStorage.get("access_token");
-
-      if (!token || isTokenExpired()) {
-        SecureStorage.remove("access_token");
-        SecureStorage.remove("role");
-        setAuthorized(false);
-        router.replace("/login");
-      } else {
-        setAuthorized(true);
-      }
-    } catch (error) {
-      console.error("ProtectedRoute error:", error);
-      setAuthorized(false);
-    } finally {
-      setCheckingAuth(false);
-    }
-  };
+  const publicRoutes = ["/login", "/register", "/forgot-password"];
 
   useEffect(() => {
-    checkAuth();
+    // ✅ If user is on a public page, don’t check auth
+    if (publicRoutes.includes(pathname)) {
+      setAuthorized(true);
+      setCheckingAuth(false);
+      return;
+    }
 
-    // 👇 Listen for login/logout events
+    const checkAuth = () => {
+      try {
+        const token = SecureStorage.get("access_token");
+
+        if (!token || isTokenExpired()) {
+          SecureStorage.remove("access_token");
+          SecureStorage.remove("role");
+          router.replace("/login");
+        } else {
+          router.replace("/");
+        }
+      } catch (error) {
+        console.error("ProtectedRoute error:", error);
+        setAuthorized(false);
+        router.replace("/login");
+      } finally {
+        setCheckingAuth(false);
+      }
+    };
+
+    checkAuth();
     window.addEventListener("authChange", checkAuth);
     return () => window.removeEventListener("authChange", checkAuth);
-  }, [pathname, router]);
+  }, [router, pathname]);
 
-  if (checkingAuth) return <Login />;
-  if (!authorized) return <Login />;
-
-  return <>{children}</>;
+  return authorized ? <>{children}</> : null;
 }
