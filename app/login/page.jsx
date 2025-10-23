@@ -36,10 +36,8 @@ export default function Login () {
       SecureStorage.set("role", role);
       toast.success("Login successful!");
       // Wait briefly to ensure SecureStorage is written
-    setTimeout(() => {
       window.dispatchEvent(new Event("authChange")); // Notify any listeners
       router.replace("/"); // Use replace to force redirect
-    }, 500);
 
       // Fallback if router fails
     } catch (error) {

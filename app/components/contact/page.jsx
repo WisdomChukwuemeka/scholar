@@ -1,8 +1,33 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { SecureStorage } from "@/utils/secureStorage";
 
 export default function ContactPage() {
+  const router = useRouter();
+    const [isLoading, setIsLoading] = useState(true);
+    const [hasToken, setHasToken] = useState(false);
+  
+    useEffect(() => {
+      const token = SecureStorage.get("access_token");
+      setHasToken(!!token);
+      if (!token) {
+        router.replace("/login");
+      }
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500); // Show spinner for 2 seconds
+    }, []);
+  
+    if (isLoading || !hasToken) {
+      return (
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-600 border-solid"></div>
+        </div>
+      );
+    }
   return (
     <section className="bg-gray-50 py-16 px-6 sm:px-12 lg:px-24">
       <div className="max-w-5xl mx-auto">

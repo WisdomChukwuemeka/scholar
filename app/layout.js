@@ -3,7 +3,7 @@ import "./globals.css";
 import { Header } from "./components/header";
 import { Footer } from "./components/footer";
 import Providers from "./providers";
-// import ProtectedRoute from "./components/protectedRoute";
+import ProtectedRoute from "./components/protectedRoute";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,13 +31,12 @@ export default function RootLayout({ children }) {
         <Providers>
           {/* Header */}
           <Header />
-
           {/* Main fills space between header and footer */}
-          {/* <ProtectedRoute> */}
+          <ProtectedRoute>
             <main className="flex-grow container mx-auto px-4 py-8">
               {children}
             </main>
-          {/* </ProtectedRoute> */}
+          </ProtectedRoute>
 
           {/* Footeyr stays at bottom */}
           <Footer />

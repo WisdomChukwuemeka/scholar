@@ -22,7 +22,7 @@ export const Header = () => {
   const [isMarkingRead, setIsMarkingRead] = useState(false);
 
   const router = useRouter();
-
+ 
   useEffect(() => {
     const checkAuthAndRole = () => {
       const token = SecureStorage.get("access_token");
