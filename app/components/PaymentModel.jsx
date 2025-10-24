@@ -9,31 +9,29 @@ export default function PaymentModal({ publicationId, paymentType, onSuccess, on
   const [reference, setReference] = useState('');
 
   useEffect(() => {
-    const initializePayment = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const payload = {
-          publication_id: publicationId || null, // Explicitly send null if undefined
-          payment_type: paymentType,
-        };
-        // console.log('Sending payment initialization payload:', payload);
-        const response = await PaymentAPI.initializePayment(payload);
-        setAuthorizationUrl(response.data.authorization_url);
-        setReference(response.data.reference);
-      } catch (err) {
-        const errorMessage = err.response?.data?.detail ||
-                            err.response?.data?.publication_id?.[0] ||
-                            'Failed to initialize payment.';
-        setError(errorMessage);
-        // console.error('Payment initialization error:', err.response?.data || err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initializePayment();
-  }, [publicationId, paymentType]);
+  const initializePayment = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const payload = { publication_id: publicationId || null, payment_type: paymentType };
+      console.log('Sending payment initialization payload:', payload);
+      const response = await PaymentAPI.initializePayment(payload);
+      console.log('Payment initialization response:', response.data);
+      setAuthorizationUrl(response.data.authorization_url);
+      setReference(response.data.reference);
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail ||
+                          err.response?.data?.publication_id?.[0] ||
+                          err.message ||
+                          'Failed to initialize payment.';
+      console.error('Payment initialization error:', err.response?.data || err);
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+  initializePayment();
+}, [publicationId, paymentType]);
 
   const handleRedirect = () => {
     if (authorizationUrl) {
